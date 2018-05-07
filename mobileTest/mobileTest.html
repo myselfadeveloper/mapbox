@@ -492,12 +492,28 @@
             });
 
             // Search projects by typing keywords, map & sidepanel changes based on search
+
+
             projectSearchEl.addEventListener('focus', function(e){
+                console.log(e);
                 var windowW = $(window).width();
                 if (windowW < 550) {
+                    console.log(1);
+                    
+                    if (e.target != projectSearchEl) {
+                        console.log(2);
+                        
                     $('.placeHolder').css('top', '25%');
                     $('.map-overlay').css('top', '25%');
+                    projectSearchEl.focus();
+                    projectSearchEl.click();
+                    }
+                    else {
+                        $('.placeHolder').css('top', '25%');
+                    $('.map-overlay').css('top', '25%');
+                    }
                 } 
+
             });
             projectSearchEl.addEventListener('blur', function(e){
                 var windowW = $(window).width();
