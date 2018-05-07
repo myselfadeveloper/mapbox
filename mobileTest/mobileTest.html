@@ -526,6 +526,34 @@
                 console.log(3);
                
                     $('#project-search').trigger('focus');
+                    projectSearchEl.addEventListener('focus', function(e){
+                console.log(e);
+                var windowW = $(window).width();
+                if (windowW < 550) {
+                    console.log(1);
+                    
+                    if (e.target != projectSearchEl) {
+                        console.log(2);
+                        
+                    $('.placeHolder').css('top', '25%');
+                    $('.map-overlay').css('top', '25%');
+                    projectSearchEl.focus();
+                    projectSearchEl.click();
+                    }
+                    else {
+                        $('.placeHolder').css('top', '25%');
+                    $('.map-overlay').css('top', '25%');
+                    }
+                } 
+
+            });
+            projectSearchEl.addEventListener('blur', function(e){
+                var windowW = $(window).width();
+                if (windowW < 550) {
+                    $('.placeHolder').css('top', '65%');
+                    $('.map-overlay').css('top', '65%');
+                } 
+            });
                 
             });
 
