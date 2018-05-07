@@ -530,9 +530,15 @@
                 
             // });
             $('#project-search').click(function(e){ 
-                console.log(5);
+                console.log(6);
                
-                    $('#project-search').bind('focus');
+                    $('#project-search').bind('focus',function() {
+        $(window).scrollTop(10);
+        var keyboard_shown = $(window).scrollTop() > 0;
+        $(window).scrollTop(0);
+
+        $('#test').append(keyboard_shown?'keyboard ':'nokeyboard ');
+    });
                     
                 
             });
