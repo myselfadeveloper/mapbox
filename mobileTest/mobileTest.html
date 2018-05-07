@@ -229,7 +229,7 @@
                 margin: 0.5em 0.5em;
             }
             .map-overlay {
-                top: 55%;
+                top: 65%;
                 width: 100%;
                 left: 0;
             }
@@ -247,7 +247,7 @@
                 display: none;
             }
             .placeHolder {
-                top: 55%;
+                top: 65%;
                 width: 100%;
                 height: 50px;
                 left: 0;
@@ -492,6 +492,20 @@
             });
 
             // Search projects by typing keywords, map & sidepanel changes based on search
+            projectSearchEl.addEventListener('focus', function(e){
+                var windowW = $(window).width();
+                if (windowW < 550) {
+                    $('.placeHolder').css('top', '45%');
+                    $('.map-overlay').css('top', '45%');
+                } 
+            });
+            projectSearchEl.addEventListener('blur', function(e){
+                var windowW = $(window).width();
+                if (windowW < 550) {
+                    $('.placeHolder').css('top', '65%');
+                    $('.map-overlay').css('top', '65%');
+                } 
+            });
             projectSearchEl.addEventListener('keyup', function (e) {
                 $('.main-nav-ul').empty();
                 var value = normalize(e.target.value);
