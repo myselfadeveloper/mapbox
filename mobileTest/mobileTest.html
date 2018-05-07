@@ -522,10 +522,17 @@
             //         $('.map-overlay').css('top', '65%');
             //     } 
             // });
-            $('#project-search').focus(function(e){ 
-                console.log(4);
+            // $('#project-search').focus(function(e){ 
+            //     console.log(4);
                
-                    $('#project-search').trigger('click');
+            //         $('#project-search').trigger('click');
+                    
+                
+            // });
+            $('#project-search').click(function(e){ 
+                console.log(5);
+               
+                    $('#project-search').bind('focus');
                     
                 
             });
