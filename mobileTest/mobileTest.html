@@ -522,66 +522,66 @@
             //         $('.map-overlay').css('top', '65%');
             //     } 
             // });
-            $('#project-search').click(function(e){ 
-                console.log(3);
+            $('#project-search').focus(function(e){ 
+                console.log(4);
                
-                    $('#project-search').trigger('focus');
+                    $('#project-search').trigger('click');
                     
                 
             });
             
-projectSearchEl.addEventListener('focus', function(e){
-                console.log(e);
-                var windowW = $(window).width();
-                if (windowW < 550) {
-                    console.log(1);
+// projectSearchEl.addEventListener('focus', function(e){
+//                 console.log(e);
+//                 var windowW = $(window).width();
+//                 if (windowW < 550) {
+//                     console.log(1);
                     
-                    if (e.target != projectSearchEl) {
-                        console.log(2);
+//                     if (e.target != projectSearchEl) {
+//                         console.log(2);
                         
-                    $('.placeHolder').css('top', '25%');
-                    $('.map-overlay').css('top', '25%');
-                    projectSearchEl.focus();
-                    projectSearchEl.click();
-                    }
-                    else {
-                        $('.placeHolder').css('top', '25%');
-                    $('.map-overlay').css('top', '25%');
-                    }
-                } 
+//                     $('.placeHolder').css('top', '25%');
+//                     $('.map-overlay').css('top', '25%');
+//                     projectSearchEl.focus();
+//                     projectSearchEl.click();
+//                     }
+//                     else {
+//                         $('.placeHolder').css('top', '25%');
+//                     $('.map-overlay').css('top', '25%');
+//                     }
+//                 } 
 
-            });
-            projectSearchEl.addEventListener('blur', function(e){
-                var windowW = $(window).width();
-                if (windowW < 550) {
-                    $('.placeHolder').css('top', '65%');
-                    $('.map-overlay').css('top', '65%');
-                } 
-            });
-            // $('#button').click(function(e) {
-            //     $('#field').trigger('click');
-            // });
-            projectSearchEl.addEventListener('keyup', function (e) {
-                $('.main-nav-ul').empty();
-                var value = normalize(e.target.value);
-                if (projectNames.length) {
-                    projectNames = projectNames;
-                } else {
-                    projectNames = uniquebudgetFeatures;
-                }
-                //Filter visible features that don't match input value
-                var filteredFeatures = projectNames.filter(function (filterFeature) {
-                    var name = normalize(filterFeature.properties.ProjectName);
-                    return name.indexOf(value) > -1;
-                });
-                var filteredCategories = []; // Create a new Category array with features from mapview
-                $.each(filteredFeatures, function (i, v) {
-                    if ($.inArray(v.properties.Category, filteredCategories) == -1) {
-                        filteredCategories.push(v.properties.Category);
-                    }
-                });
-                addBudgetLayers(filteredCategories, filteredFeatures);
-            });
+//             });
+//             projectSearchEl.addEventListener('blur', function(e){
+//                 var windowW = $(window).width();
+//                 if (windowW < 550) {
+//                     $('.placeHolder').css('top', '65%');
+//                     $('.map-overlay').css('top', '65%');
+//                 } 
+//             });
+//             // $('#button').click(function(e) {
+//             //     $('#field').trigger('click');
+//             // });
+//             projectSearchEl.addEventListener('keyup', function (e) {
+//                 $('.main-nav-ul').empty();
+//                 var value = normalize(e.target.value);
+//                 if (projectNames.length) {
+//                     projectNames = projectNames;
+//                 } else {
+//                     projectNames = uniquebudgetFeatures;
+//                 }
+//                 //Filter visible features that don't match input value
+//                 var filteredFeatures = projectNames.filter(function (filterFeature) {
+//                     var name = normalize(filterFeature.properties.ProjectName);
+//                     return name.indexOf(value) > -1;
+//                 });
+//                 var filteredCategories = []; // Create a new Category array with features from mapview
+//                 $.each(filteredFeatures, function (i, v) {
+//                     if ($.inArray(v.properties.Category, filteredCategories) == -1) {
+//                         filteredCategories.push(v.properties.Category);
+//                     }
+//                 });
+//                 addBudgetLayers(filteredCategories, filteredFeatures);
+//             });
         });
 
         // Change search position if its a smaller screen
