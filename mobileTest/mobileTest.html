@@ -262,6 +262,7 @@
             .mapboxgl-ctrl a.mapboxgl-ctrl-logo{
                 display: none !important;
             }
+            body.keyboard-up .header { height:0; padding:0; }
         }
     </style>
 </head>
@@ -529,19 +530,19 @@
                     
                 
             // });
-            $('#project-search').click(function(e){ 
-                console.log(6);
+    //         $('#project-search').click(function(e){ 
+    //             console.log(6);
                
-                    $('#project-search').bind('focus',function() {
-        $(window).scrollTop(10);
-        var keyboard_shown = $(window).scrollTop() > 0;
-        $(window).scrollTop(0);
+    //                 $('#project-search').bind('focus',function() {
+    //     $(window).scrollTop(10);
+    //     var keyboard_shown = $(window).scrollTop() > 0;
+    //     $(window).scrollTop(0);
 
-        $('#test').append(keyboard_shown?'keyboard ':'nokeyboard ');
-    });
+    //     $('#test').append(keyboard_shown?'keyboard ':'nokeyboard ');
+    // });
                     
                 
-            });
+    //         });
             
 // projectSearchEl.addEventListener('focus', function(e){
 //                 console.log(e);
@@ -595,6 +596,8 @@
 //                 });
 //                 addBudgetLayers(filteredCategories, filteredFeatures);
 //             });
+$('#project-search').focus(function(){  $(document.body).addClass('when-keyboard-showing');     });
+$('#project-search').blur( function(){  $(document.body).removeClass('when-keyboard-showing');  });
         });
 
         // Change search position if its a smaller screen
