@@ -246,13 +246,13 @@
             #label-geocoder {
                 display: none;
             }
-            .placeHolder {
+            /* .placeHolder {
                 top: 65%;
                 width: 100%;
                 height: 50px;
                 left: 0;
                 position: fixed;
-            }
+            } */
             #label-project-search {
                 left: 4px;
             }
@@ -512,14 +512,14 @@
             });
         });
 
-        // Change search position if its a smaller screen
-        var windowWidth = $(window).width();
-        mediaResize(windowWidth, "#project-search", "#label-project-search", ".placeHolder", ".search");
-        // If resizing browser change search position based on screen size
-        $(window).resize(function () {
-            var windowW = $(window).width();
-            mediaResize(windowW, "#project-search", "#label-project-search", ".placeHolder", ".search");
-        });
+        // // Change search position if its a smaller screen
+        // var windowWidth = $(window).width();
+        // mediaResize(windowWidth, "#project-search", "#label-project-search", ".placeHolder", ".search");
+        // // If resizing browser change search position based on screen size
+        // $(window).resize(function () {
+        //     var windowW = $(window).width();
+        //     mediaResize(windowW, "#project-search", "#label-project-search", ".placeHolder", ".search");
+        // });
 
         /* 
          * Iterate through passed Categories & Features for each category
