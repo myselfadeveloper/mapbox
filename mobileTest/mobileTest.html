@@ -526,7 +526,11 @@
                 console.log(3);
                
                     $('#project-search').trigger('focus');
-                    projectSearchEl.addEventListener('focus', function(e){
+                    
+                
+            });
+            
+projectSearchEl.addEventListener('focus', function(e){
                 console.log(e);
                 var windowW = $(window).width();
                 if (windowW < 550) {
@@ -554,9 +558,6 @@
                     $('.map-overlay').css('top', '65%');
                 } 
             });
-                
-            });
-
             // $('#button').click(function(e) {
             //     $('#field').trigger('click');
             // });
