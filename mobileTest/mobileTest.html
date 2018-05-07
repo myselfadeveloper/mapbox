@@ -523,9 +523,11 @@
             //     } 
             // });
             $('#project-search').click(function(e){ 
-                console.log(e);
-                $(this).focus(); 
-                $(this).click(); 
+                console.log(1);
+                $('body').click(function(e)
+                {
+                    $('#project-search').trigger('click');
+                })
             });
 
             // $('#button').click(function(e) {
