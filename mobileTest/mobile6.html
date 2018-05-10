@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8' />
+    <title>NSW Budget 2017-18</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.44.1/mapbox-gl.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.44.1/mapbox-gl.css' rel='stylesheet' />
+    <link href='https://www.mapbox.com/base/latest/base.css' rel='stylesheet' />
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+        crossorigin="anonymous"></script>
+    <style>
+        #map {
+            /* Create a position for the main map container */
+            position: absolute;
+            top: 50px;
+            bottom: 0;
+            width: 80%;
+            right: 20%;
+        }
+
+        .mapboxgl-ctrl-top-left .mapboxgl-ctrl {
+            /* Styling for Navigation Control */
+            width: 30px;
+            height: 90px;
+        }
+
+        .icon:not(.big):before {
+            /* Adjust the position inside the icon polygon */
+            margin-right: 2px;
+            color: rgb(51, 51, 51);
+        }
+
+        .mapboxgl-popup {
+            /* Popup CSS */
+            max-width: 400px;
+            font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+        }
+
+        .mapboxgl-popup-content {
+            text-align: center;
+            font-family: 'Open Sans', sans-serif;
+            background: rgba(255, 255, 255, 0.678);
+            border-radius: 10px;
+        }
+
+        .map-overlay {
+            /* Styles for Category / Projects overlay container */
+            position: absolute;
+            top: 90px;
+            width: 30%;
+            left: 70%;
+            bottom: 0;
+            overflow: auto;
+            background: rgb(221, 220, 220);
+        }
+
+        #featuresPanel {
+            /* Panel to display features on ProjectList Hover / Click */
+            position: absolute;
+            top: 50px;
+            bottom: 0;
+            width: 30%;
+            left: 40%;
+            display: none;
+            background: rgb(233, 231, 231);
+            color: black;
+        }
+
+        .close-classic:after {
+            /* Close button for Features panel*/
+            float: right;
+            margin-right: 10PX;
+            margin-top: 10px;
+            content: '✖'; /* UTF-8 symbol */
+        }
+
+        .placeHolder {
+            /* To place Project search bar */
+            position: absolute;
+            top: 0;
+            width: 30%;
+            left: 70%;
+            height: 90px;
+            background: rgb(221, 220, 220);
+            display: inline-block;
+            white-space: nowrap;
+        }
+
+        #project-search {
+            /* Styling for Project Search */
+            position: absolute;
+            font-size: 12px;
+            z-index: 10;
+            width: 80%;
+            right: 10%;
+            top: 30px;
+            height: 41px;
+            border-radius: 3px;
+            box-shadow: 0 0 1px 1px rgba(182, 181, 181, 0.863);
+        }
+
+        #label-project-search {
+            /* Styling for Project Search text label*/
+            position: absolute;
+            z-index: 10;
+            top: 10px;
+            left: 35%;
+            font-weight: bold;
+            font-size: 12px;
+            color: rgb(10, 10, 10);
+            letter-spacing: .075em;
+        }
+
+        #input-project-search{
+            width: 50%;
+            height: 40px;
+            float: right;
+            margin-right: 0px;
+            margin-left: 0px;
+            left: 0px;
+            margin-top: 5px;
+            font-size: 12px;
+            display: none;
+        }
+
+        .geocoder-overlay {
+            /* Geocoder styling */
+            position: absolute;
+            top: 0;
+            height: 50px;
+            width: 100%;
+            z-index: 10;
+        }
+
+        .geocoder {
+            position: relative;
+            z-index: 1;
+            width: 40%;
+            left: 200px;
+            top: 5px;
+        }
+
+        .mapboxgl-ctrl-geocoder.mapboxgl-ctrl {
+            min-width: 100%;
+            right: 60px;
+            border:1px solid black;
+        }
+
+        #label-geocoder {
+            /* Styling for Postcode Search text label*/
+            position: absolute;
+            z-index: 10;
+            top: 15px;
+            left: 10px;
+            font-weight: bold;
+            font-size: 12px;
+            color: rgb(10, 10, 10);
+            letter-spacing: .075em;
+        }
+
+        .main-nav {
+            /* Category/Project list Navigation Styling */
+            width: 100%;
+            background: rgb(221, 220, 220);
+            position: sticky;
+            /* top:90px; */
+            border-top: 1px solid gray;
+        }
+
+        /* .main-nav-ul {
+            margin-top: 0;
+        } */
+
+        .main-nav a {
+            text-decoration: none;
+            display: block;
+            padding: 20px 0 20px 20px;
+            color: rgb(10, 10, 10);
+            letter-spacing: .1em;
+            border-bottom: 1px solid gray;
+            font-weight: bold;
+            font-size: small;
+            font-family: Helvetica, Arial, sans-serif;
+        }
+
+        .main-nav a:hover {
+            background: rgba(221, 220, 220, 0.589);
+        }
+
+        .main-nav li {
+            list-style: none;
+        }
+
+        .main-nav-ul ul {
+            display: none;
+            overflow: auto;
+        }
+
+        .main-nav-ul ul a::before {
+            content: '\203A';
+            margin-right: 10px;
+        }
+
+        .main-nav-ul li:hover {
+            background: rgba(167, 165, 165, 0.486);
+        }
+
+        .main-nav-ul li ul {
+            background: rgb(233, 231, 231);
+        }
+
+        .main-nav .sub-arrow:after {
+            content: '\203A';
+            float: right;
+            margin-right: 20PX;
+            transform: rotate(90deg);
+            -webkit-transform: rotate(90deg);
+            -moz-transform: rotate(90deg);
+            font-size: 30px;
+        }
+
+        .main-nav li:hover .sub-arrow:after {
+            content: '\2039';
+        }
+
+        @media (max-width:550px) {
+            /* Styling for smallscreens */
+            #map {
+                width: 100%;
+                right: 0;
+                bottom: 50%;
+                border-bottom: 2px solid #9e9999;
+
+            }
+            .mapboxgl-popup-content {
+                max-width: 250px;
+            }
+            .mapboxgl-popup-content div {
+                padding: 0em;
+            }
+            .mapboxgl-popup-content p {
+                margin: 0.5em 0.5em;
+            }
+            .map-overlay {
+                top: 50%;
+                width: 100%;
+                left: 0;
+            }
+            .main-nav-ul {
+                margin-top: 0px;
+            }
+            #featuresPanel {
+                top: 30%;
+                width: 100%;
+                left: 0;
+                right: 0;
+                height: 18%;
+                overflow: auto;
+                font-size: small;
+            }
+            #featuresPanelContent {
+                padding: 5px;
+            }
+            .mapboxgl-ctrl-geocoder.mapboxgl-ctrl {
+                right: 0;
+                border:1px solid rgba(0, 0, 0, 0);
+            }
+            .geocoder {
+                left: 0;
+                width: 50%;
+            }
+            #label-geocoder {
+                display: none;
+            }
+            .placeHolder {
+                top: 65%;
+                width: 100%;
+                height: 50px;
+                left: 0;
+                position: fixed;
+                display: none;
+            }
+            #label-project-search {
+                left: 4px;
+                font-size:small;
+            }
+            #project-search {
+                right: 5px;
+            }
+            a.mapboxgl-ctrl-logo{
+                display: none !important;
+            }
+            #input-project-search {
+                margin-top: 4px;
+                height: 44px;
+            }
+        }
+        @media (max-width:320px) {
+            #project-search {
+                width: 200px;
+            }
+            #label-project-search {
+                font-size:small;
+            }
+        }
+        /* Wrapper created by ogilvy */
+        #map-wrapper {
+          height: 650px;
+        }
+        /* .map-overlay {
+          width: 30%;
+          left: 70%;
+        } */
+        .main-nav a {
+            font-size: 13px;
+        }
+        .people--full ul li, .paragraph--type--rich-text-content- .map-overlay ul li {
+          padding-left: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v2.2.0/mapbox-gl-geocoder.min.js'></script>
+    <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v2.2.0/mapbox-gl-geocoder.css'
+        type='text/css' />
+    <div id="map-wrapper"> <!-- Wrapper created by ogilvy -->
+        <div id='map'></div>
+        <!-- Main map container -->
+        <form>
+            <label for="text-1"></label>
+            <input id='input-project-search' type="text" name="text-1" id="text-1" value="" placeholder="Projects e.g. Roads">
+        </form>
+        <div class='geocoder-overlay'>
+            <!-- Geocoder container -->
+            <label id="label-geocoder">Search by Postcode </label>
+            <!-- Postcode Search Label container -->
+            <div id='geocoder' class='geocoder'></div>
+            <div class='placeHolder'>
+                <!-- To place Project search bar -->
+                <label id="label-project-search">Search projects </label>
+                <!-- Project Search Label container -->
+                <input id='project-search' type="text" placeholder="e.g. Hospital">
+                <!-- Project Search Input container -->
+            </div>
+        </div>
+        <div class='map-overlay'>
+            <!-- Category / Projects overlay container -->
+            <nav class="main-nav">
+                <ul class="main-nav-ul" id="main-nav-ul"></ul>
+            </nav>
+            <!-- Category / Projects Nav menu -->
+        </div>
+        <div id='featuresPanel'>
+            <!-- Panel to display features on ProjectList Hover / Click -->
+            <a class="close-classic"></a>
+            <div id='featuresPanelContent'></div>
+        </div>
+        <!-- <button id="iconrotate" class="icon rotate" type="button" title="Reset / Remove Filters"></button> -->
+        <!-- <button id="iconHome" class="icon home" type="button" title="Home"></button> -->
+    </div>
+    <script>
+        mapboxgl.accessToken =
+            'pk.eyJ1IjoiY2hhaXRhbnlhLWd1bmRlYm9pbmEiLCJhIjoiY2pnYnMzc3JuM2VhbzMzbG9kM3d1OXR1eSJ9.yv_5PsTGgF6W5Twtj4znXw';
+        var nswBounds = [
+            [140, -37],
+            [157, -28]
+        ]; // Lan & Lat for the map to fit in
+        var map = new mapboxgl.Map({ // Initiate map
+            container: 'map',
+            style: 'mapbox://styles/mapbox/basic-v9',
+            center: [149, -32.8],
+            zoom: 5.5,
+            pitchWithRotate: false,
+            dragRotate: false,
+            attributionControl: false, //<--- This removes ! '© Mapbox © OpenStreetMap Improve this map'  
+        });
+        map.touchZoomRotate.disableRotation(); // Disable rotation
+
+        var highlitePopup = new mapboxgl.Popup({ // Create highlite popup for on hover event
+            closeButton: false
+        });
+        var projectListingPopup = new mapboxgl.Popup({ // Create popup for on click event
+        });
+
+        var mainBudgetCat = ["Education", "Government Services", "Health", "Police and Justice", "Roads", "Transport",
+            "Utilities", "Community Services"
+        ];
+        var projectNames = [];
+        var projectSearchEl = document.getElementById('project-search');
+
+        //Global var tracks whether map is being touched
+        var touchingMap = false;
+
+        //When the Mapbox canvas is touched, adjust the global tracking var
+        $(document).on("touchstart","canvas",function(e){
+        touchingMap = true;
+        });
+
+        //When the Mapbox canvas is no longer being touched, adjust the global tracking var
+        $(document).on("touchend","canvas",function(e){
+        if(e.touches.length == 0){
+            touchingMap = false;
+        }
+        });
+
+        var windowWidth = $(window).width();
+        //When any touch move event happens fire this:
+        $("*").on("touchmove",function(e){
+        //If the map is currently being touched, block any touch move event except those coming from the map.
+        if(touchingMap && !($(this).prop("tagName").toLowerCase() == "canvas")){
+            e.preventDefault();
+        }
+        });
+
+        $.getJSON("budget1718.geojson", function (data) { // Get data from budget geojson file
+            var budgetFeatures = data.features;
+            // Get only Unique features, because features come from tiled vector data, feature geometries may be split
+            // or duplicated across tile boundaries and, as a result, features may appear
+            // multiple times in query results.
+            var uniquebudgetFeatures = getUniqueFeatures(budgetFeatures, 'PrimeID');
+
+            map.on('load', function () {
+                map.fitBounds(nswBounds); // Map to show NSW When loads
+                var nav = new mapboxgl.NavigationControl({ // Add zoom and rotation controls to the map.
+                    showCompass: false
+                });
+                var geocoder = new MapboxGeocoder({ // Add Geocoder
+                    accessToken: mapboxgl.accessToken,
+                    country: 'au', // limit results to Australia
+                    placeholder: 'Postcode e.g - 2100',
+                    bbox: [139.965, -38.030, 155.258, -27.839], // limit to geographic bounds of NSW
+                    // apply a client side filter to further limit results to those strictly within
+                    // the New South Wales region
+                    filter: function (item) {
+                        // returns true if item contains New South Wales region
+                        return item.context.map(function(i){
+                            // id is in the form {index}.{id} per https://github.com/mapbox/carmen/blob/master/carmen-geojson.md
+                            // this example attempts to find the `region` named `New South Wales`
+                            return (i.id.split('.').shift() === 'region' && i.text ===
+                                'New South Wales');
+                        }).reduce(function(acc, cur){
+                            return acc || cur;
+                        });
+                    }
+                });
+
+                document.getElementById('geocoder').appendChild(geocoder.onAdd(map));
+                map.addControl(nav, 'top-left'); // Add Navigation controls on top-left
+                $('.mapboxgl-ctrl-icon.mapboxgl-ctrl-zoom-in').attr('title', 'Zoom-In'); //Add tootltips
+                $('.mapboxgl-ctrl-icon.mapboxgl-ctrl-zoom-out').attr('title', 'Zoom-Out');
+                // Add a reset button to remove filters
+                // $('#iconrotate').appendTo('.mapboxgl-ctrl-top-left .mapboxgl-ctrl');
+                // var resetBtn = document.getElementById('iconrotate');
+                // resetBtn.onclick = function () {
+                //     $('.main-nav-ul').empty();
+                //     addBudgetLayers(mainBudgetCat, uniquebudgetFeatures);
+                // };
+                // Add a home button to zoom back to NSW
+                var homeBtnEl = '<button id="iconHome" class="icon home" type="button" title="Home"></button>'
+                $(homeBtnEl).appendTo('.mapboxgl-ctrl-top-left .mapboxgl-ctrl');
+                var nswHomeBtn = document.getElementById('iconHome');
+                nswHomeBtn.onclick = function () {
+                    map.fitBounds(nswBounds);
+                    $('.main-nav-ul').empty();
+                    $('input[type=text]').val('');
+                    $('#featuresPanel').css('display', 'none');
+                    highlitePopup.remove();
+                    projectListingPopup.remove(); 
+                    addBudgetLayers(mainBudgetCat, uniquebudgetFeatures);
+                };
+
+                // Listen for the `geocoder.input` event that is triggered when a user
+                // makes a selection and add a symbol that matches the result.
+                geocoder.on('clear', function() {
+                    $('.main-nav-ul').empty();
+                    addBudgetLayers(mainBudgetCat, uniquebudgetFeatures);
+                });
+
+                geocoder.on('result', function() {
+                    $('.main-nav-ul').empty();
+                    addBudgetLayers(mainBudgetCat, uniquebudgetFeatures);
+                });
+
+                map.addSource("lga", { // Add lga geojson file as data source
+                    type: "geojson",
+                    data: "./lga2.geojson",
+                });
+                map.addLayer({ // Add lga layer from source
+                    id: 'lgaLayer',
+                    type: 'fill',
+                    source: 'lga',
+                    paint: {
+                        'fill-color': 'rgba(0, 0, 0,0)',
+                        'fill-outline-color': 'rgba(200, 100, 240, 1)'
+                    }
+                });
+                map.addSource("budget", { // Add budget source from data fetched thru jquery getJSON 
+                    type: "geojson",
+                    data: data,
+                    cluster: false,
+                    clusterMaxZoom: 2, // Max zoom to cluster points on
+                    clusterRadius: 0 // Radius of each cluster when clustering points (defaults to 50)
+                });
+                addBudgetLayers(mainBudgetCat, uniquebudgetFeatures);
+
+                map.addLayer({ // Add lga highlitelayer when clicked on LGA polygon
+                    id: 'lga-highlited',
+                    type: 'fill',
+                    source: 'lga',
+                    paint: {
+                        "fill-outline-color": "#484896",
+                        "fill-color": "rgba(200, 100, 240, 0.1)",
+                        "fill-opacity": 0.75
+                    },
+                    filter: ["in", "id", ""]
+                });
+
+                // map.on('click', 'lgaLayer', function (e) { // Zoom to clicked polygon & highlite
+                //     var bbox = [
+                //         [e.point.x - 5, e.point.y - 5],
+                //         [e.point.x + 5, e.point.y + 5]
+                //     ];
+                //     var coordinates = e.features[0].geometry.coordinates;
+                //     var bounds = coordinates.reduce(function (bounds, coord) {
+                //             return bounds.extend(coord);
+                //         },
+                //         new mapboxgl.LngLatBounds(coordinates[1], coordinates[0]));
+                //     map.fitBounds(bounds, {
+                //         padding: 20
+                //     });
+                //     var features = map.queryRenderedFeatures(bbox, {
+                //         layers: ['lgaLayer']
+                //     });
+                //     // Run through the selected features and set a filter
+                //     // to match features with unique FIPS codes to activate
+                //     // the `counties-highlighted` layer.
+                //     var filter = features.reduce(function (memo, feature) {
+                //         memo.push(feature.properties.id);
+                //         return memo;
+                //     }, ['in', 'id']);
+                //     map.setFilter('lga-highlited', filter);
+                //     highliteLga(bbox, coordinates, bounds, uniquebudgetFeatures);
+                // });
+                changeCursor('lgaLayer', 'alias'); // Change cursor property when on lga layer
+
+                map.on("moveend", function () { // Query features after a transition from one view to another
+                    var moveEndFeatures = map.queryRenderedFeatures({
+                        layers: mainBudgetCat
+                    });
+                    // Get only Unique features, because features come from tiled vector data, feature geometries may be split
+                    // or duplicated across tile boundaries and, as a result, features may appear
+                    // multiple times in query results.
+                    var uniqueFeatures = getUniqueFeatures(moveEndFeatures, 'PrimeID');
+                    var moveEndCategories = []; // Create a new Category array with features from mapview
+                    $.each(moveEndFeatures, function (index, value) {
+                        if ($.inArray(value.properties.Category, moveEndCategories) ==
+                            -1) {
+                            moveEndCategories.push(value.properties.Category);
+                        }
+                    });
+                    // Check if there's any available features @ that mapview
+                    // If any features, then clear the nav-menu 
+                    // and repopulate with those features
+                    if (moveEndCategories.length) {
+                        $('.main-nav-ul').empty();
+                        addBudgetLayers(moveEndCategories, uniqueFeatures);
+                    }
+                });
+                $('.close-classic').click(function (e) {
+                    $('#featuresPanel').css('display', 'none');
+                });
+            });
+
+            // Change search position if its a smaller screen
+            var windowWidth = $(window).width();
+            // mediaResize(windowWidth, "#project-search", "#label-project-search", ".placeHolder", ".search");
+            // If resizing browser change search position based on screen size
+            $(window).resize(function () {
+                var windowW = $(window).width();
+                if(windowW < 550){
+                    $('#input-project-search').css({'display': 'block'});
+                    $('#project-search').css({'display': 'none'});
+                    projectSearchE = document.getElementById('input-project-search');
+                }
+                if(windowW > 550){
+                    $('#project-search').css({'display': 'block'});
+                    $('#input-project-search').css({'display': 'none'});
+                    projectSearchE = projectSearchEl
+                }
+                // mediaResize(windowW, "#project-search", "#label-project-search", ".placeHolder", ".search");
+            });
+            
+            // Search projects by typing keywords, map & sidepanel changes based on search
+            if(windowWidth < 550){
+                $('#input-project-search').css({'display': 'block'});
+                projectSearchE = document.getElementById('input-project-search');
+            } else {
+                projectSearchE = projectSearchEl
+            }
+            projectSearchE.addEventListener('keyup', function (e) {
+                $('.main-nav-ul').empty();
+                var value = normalize(e.target.value);
+                if (projectNames.length) {
+                    projectNames = projectNames;
+                } else {
+                    projectNames = uniquebudgetFeatures;
+                }
+                //Filter visible features that don't match input value
+                var filteredFeatures = projectNames.filter(function (filterFeature) {
+                    var name = normalize(filterFeature.properties.ProjectName);
+                    return name.indexOf(value) > -1;
+                });
+                var filteredCategories = []; // Create a new Category array with features from mapview
+                $.each(filteredFeatures, function (i, v) {
+                    if ($.inArray(v.properties.Category, filteredCategories) == -1) {
+                        filteredCategories.push(v.properties.Category);
+                    }
+                });
+                addBudgetLayers(filteredCategories, filteredFeatures);
+            });
+        });
+
+        /* 
+         * Iterate through passed Categories & Features for each category
+         * and create Category & Projects listing
+         */
+        function addBudgetLayers(budgetCat, budFeatures) {
+            mainBudgetCat.forEach(function (maincat) {
+                object = map.style._layers;
+                if (object[maincat]) {
+                    map.removeLayer(maincat);
+                }
+            });
+            for (i = 0; i < budgetCat.length; i++) {
+                map.addLayer({
+                    id: budgetCat[i],
+                    type: "circle",
+                    source: "budget",
+                    paint: {
+                        "circle-radius": 5,
+                        "circle-color": color(budgetCat[i]),
+                        "circle-opacity": 0.9,
+                        "circle-stroke-width": 10,
+                        "circle-stroke-color": '#FFF',
+                        "circle-stroke-opacity": 0
+                    },
+                    filter: ["==", "Category", budgetCat[i]]
+                });
+                var catFeatures = [];
+                budFeatures.forEach(function (feat) {
+                    if (feat.properties.Category == budgetCat[i]) {
+                        catFeatures.push(feat);
+                    }
+                });
+                var id = budgetCat[i];
+                // Create a li element, to be appended to nav menu (navMainUl) later
+                var catList = document.createElement('li');
+                // Create an 'a' / anchor element, to be appended to Category listing (catList) later
+                var catElmtA = document.createElement('a');
+                catElmtA.textContent = id;
+                catElmtA.style = 'border-left: 10px solid ' + color(budgetCat[i]) + ';';
+                // Create a span element, to be appended to  catlist anchor (catElmtA) later
+                var spanElmtA = document.createElement('span');
+                spanElmtA.className = 'sub-arrow';
+
+                catElmtA.appendChild(spanElmtA);
+                catList.appendChild(catElmtA);
+
+                // Create a ul element, to be appended to Category listing (catList) later
+                var catElmtUl = document.createElement('ul');
+                catFeatures.forEach(function (f) {
+                    var projectName = f.properties.ProjectName;
+                    var projElmtLi = document.createElement('li');
+                    catElmtUl.appendChild(projElmtLi);
+                    // Create an 'a' / anchor element, to be appended to Project listing (catList) later
+                    var projElmtA = document.createElement('a');
+                    projElmtA.textContent = projectName;
+                    projElmtA.style = 'border-left: 15px solid ' + color(budgetCat[i]) + ';';
+                    projElmtLi.appendChild(projElmtA);
+                    catElmtUl.appendChild(projElmtLi);
+                    renderGeometryType(f, projElmtA);
+                });
+                catList.appendChild(catElmtUl);
+                var navMainUl = document.getElementById('main-nav-ul');
+                navMainUl.appendChild(catList);
+
+                // Category element, on click event
+                catElmtA.onclick = function (e) {
+                    var isSpan = $(e.srcElement).is( 'span');
+                    if(!isSpan){
+                        // If Projects listing is visible, change visibility to none
+                        if ($(this).siblings().css('display') == 'block') {
+                            $(this).siblings().css('display', 'none');
+                            dataVisibility(budgetCat, 'visible');
+                            $('#featuresPanel').css('display', 'none');
+                        } else { // If Projects listing is not visible, make them visible
+                            $('.main-nav-ul').children().each(function () { // hide previous category list that is visible
+                                if ($(this).children('ul').css('display') == 'block') {
+                                    $(this).children('ul').css('display', 'none');
+                                }
+                            });
+                            $(this).siblings().css('display', 'block'); // make the selected category visible
+                            budgetCat.forEach(function (visibleCat) {
+                                if (visibleCat != clickedLayer) {
+                                    map.setLayoutProperty(visibleCat, 'visibility', 'none');
+                                }
+                            });
+                        }
+                        var clickedLayer = e.target.textContent;
+                        e.preventDefault();
+                        e.stopPropagation();
+                        // Set visibility none for all the budget layers not selected
+
+                        var visibility = map.getLayoutProperty(clickedLayer, 'visibility');
+                        if (visibility === 'visible') {
+                            map.setLayoutProperty(clickedLayer, 'visibility', 'visible');
+                        } else if (visibility === 'none') {
+                            map.setLayoutProperty(clickedLayer, 'visibility', 'visible');
+                        }
+                    }
+                };
+                changeCursor(budgetCat[i], 'pointer');
+
+                map.on('click', budgetCat[i], function (e) {
+                if (!e.features.length) {
+                    return;
+                }
+                var feature = e.features[0];
+                if (feature.geometry.type === 'Point'){
+                    // featurePopup (feature.geometry.coordinates, feature.properties.ProjectName, 
+                    //     feature.properties.Category, feature.properties.Status, feature.properties.AgencyName);
+                    displayFeaturesPanel(feature);
+                    
+                } else {
+                    // Fix multiple popups, Hard code lng & lat @ click event & feed them to coordinates
+                    // var coordinate = [e.lngLat.lng, e.lngLat.lat];
+                    // featurePopup (coordinate, feature.properties.ProjectName, 
+                    //     feature.properties.Category, feature.properties.Status, feature.properties.AgencyName);
+                    displayFeaturesPanel(feature);
+                   
+                }
+            });
+            }
+        }
+
+        /*
+         * Add event listeners to the Projects Listing
+         */
+        function renderListingsEvents(item, coordinates, ProjectName, featr) {
+            item.addEventListener('mouseover', function () {
+                if (windowWidth < 550) {
+                    map.flyTo({
+                        center: coordinates,
+                        zoom: 12
+                    });
+                }
+                displayFeaturesPanel(featr);
+                $('#featuresPanel').css('display', 'block');
+                // Highlight corresponding feature on the map
+                highlitePopup.setLngLat(coordinates)
+                    .setText(ProjectName)
+                    .addTo(map);
+            });
+            item.addEventListener('mouseleave', function () {
+                highlitePopup.remove();
+            });
+            item.addEventListener('click', function () {
+                map.flyTo({
+                    center: coordinates,
+                    zoom: 12
+                });
+                displayFeaturesPanel(featr);
+                $('#featuresPanel').css('display', 'block');
+                // Add corresponding feature on the map
+                projectListingPopup.setLngLat(coordinates)
+                    .setText(ProjectName)
+                    .addTo(map); 
+            });
+        }
+
+        /* 
+         * Because features come from tiled vector data, feature geometries may be split
+         * or duplicated across tile boundaries and, as a result, features may appear 
+         * multiple times in query results.
+         */
+        function getUniqueFeatures(array, comparatorProperty) {
+            var existingFeatureKeys = {};
+            var uniqueFeatures = array.filter(function (el) {
+                if (existingFeatureKeys[el.properties[comparatorProperty]]) {
+                    return false;
+                } else {
+                    existingFeatureKeys[el.properties[comparatorProperty]] = true;
+                    return true;
+                }
+            });
+            // Store the current features in projectName variable to
+            // later use for filtering on `keyup`.
+            projectNames = uniqueFeatures;
+            return uniqueFeatures;
+        }
+
+        /*
+         * Change the cursor to a type when the mouse is over the layer &
+         * Change it back to a pointer when it leaves.
+         */
+        function changeCursor(lyrId, type) {
+            // Change the cursor to a type when the mouse is over the layer.
+            map.on('mouseenter', lyrId, function () {
+                map.getCanvas().style.cursor = type;
+            });
+
+            // Change it back to a pointer when it leaves.
+            map.on('mouseleave', lyrId, function () {
+                map.getCanvas().style.cursor = '';
+            });
+        }
+
+        /*
+         * If geometry is point use the point coordinates
+         * If geometry is multipoint, iterate through every coordinate
+         */
+        function renderGeometryType(feature, item) {
+            // If geometry is point use the point coordinates
+            if (feature.geometry.type === 'Point') {
+                renderListingsEvents(item, feature.geometry.coordinates, feature.properties.ProjectName, feature);
+
+            }
+            // If geometry is multipoint, iterate through every coordinate
+            else {
+                feature.geometry.coordinates.forEach(function (coordinate) {
+                    renderListingsEvents(item, coordinate, feature.properties.ProjectName, feature);
+                });
+            }
+        }
+
+        /*
+         * Change color based on Category
+         */
+        function color(cat) {
+            var clr;
+            switch (cat) {
+                case "Community Services":
+                    clr = "#006635";
+                    break;
+                case "Education":
+                    clr = "#FFCD05";
+                    break;
+                case "Government Services":
+                    clr = "#713E96";
+                    break;
+                case "Health":
+                    clr = "#CC3366";
+                    break;
+                case "Police and Justice":
+                    clr = "#44459C";
+                    break;
+                case "Roads":
+                    clr = "#F26739";
+                    break;
+                case "Transport":
+                    clr = "#177EBB";
+                    break;
+                case "Utilities":
+                    clr = "#339999";
+                    break;
+                default:
+                    clr = "#ccc"
+            }
+            return clr;
+        }
+
+        /*
+         * Converta string to lowercase, ease for search functionality
+         */
+        function normalize(string) {
+            return string.trim().toLowerCase();
+        }
+
+        /*
+         * On smaller screens, add an element to different 
+         */
+        function mediaResize(windowWidth, targetEl1, targetEl2, destEl1, destEl2) {
+            var windowWidth = $(window).width();
+            if (windowWidth < 550) {
+                $(targetEl1).prependTo(destEl1);
+                $(targetEl2).prependTo(destEl1);
+            } else {
+                $(targetEl1).prependTo(destEl2);
+                $(targetEl2).prependTo(destEl2);
+            };
+        }
+
+        /*
+         * Change data on map to visible / hide
+         */
+        function dataVisibility(budgetCat, visibility) {
+            budgetCat.forEach(function (visibleCat) {
+                map.setLayoutProperty(visibleCat, 'visibility', visibility);
+            });
+        }
+
+        /*
+         * Set Layout & data for features panel & display
+         */
+        function displayFeaturesPanel(featr) {
+            $('#featuresPanel').css('display', 'block');
+            $('#featuresPanelContent').empty();
+            if (windowWidth < 550) {
+                $('#featuresPanelContent').css('padding', '5px').append('<strong>' + featr.properties.ProjectName + '</strong>' +
+                    '</br>Location :' + featr.properties.LGA + ', ' + featr.properties.Region +
+                    '</br>Delivery Agency :' + featr.properties.AgencyName +
+                    '</br>Commitment for 2018-19 financial year :' + featr.properties.Allocation201718 +
+                    '</br>Estimated total cost : $' + featr.properties.ETC);
+            } else {
+                $('#featuresPanelContent').css('padding', '20px').append('<h3>' + featr.properties.ProjectName +
+                    '</h3><p style="font-weight: bold;">$' + featr.properties.ETC +
+                    '</p><p>Location</br>' + featr.properties.LGA + ', ' + featr.properties.Region +
+                    '</p><p>Delivery Agency</br>' + featr.properties.AgencyName +
+                    '</p><p>Commitment for 2018-19 financial year</br>' + featr.properties.Allocation201718 +
+                    '</p><p>Estimated total cost</br>' + featr.properties.ETC +
+                    '</p>');
+            }
+        }
+
+        /*
+         * Highlite features inside a selected polygon
+         */
+        function highliteLga(bbox, coordinates, bounds, features) {}
+    </script>
+</body>
+
+</html>
