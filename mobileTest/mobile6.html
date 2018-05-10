@@ -625,6 +625,10 @@
                     }
                 });
                 addBudgetLayers(filteredCategories, filteredFeatures);
+                
+                if(e.keyCode == 13){
+                    document.activeElement.blur();
+                }
             });
         });
 
