@@ -730,6 +730,24 @@
                         } else if (visibility === 'none') {
                             map.setLayoutProperty(clickedLayer, 'visibility', 'visible');
                         }
+                    } else if (isSpan){
+                        if ($(this).siblings().css('display') == 'block') {
+                            $(this).siblings().css('display', 'none');
+                            dataVisibility(budgetCat, 'visible');
+                            $('#featuresPanel').css('display', 'none');
+                        } else { // If Projects listing is not visible, make them visible
+                            $('.main-nav-ul').children().each(function () { // hide previous category list that is visible
+                                $(this).children('ul').css('display', 'none');
+                            });
+                            $(this).siblings().css('display', 'block'); // make the selected category visible
+                            clickedLayer = this.text
+                            dataVisibility(budgetCat, 'visible');
+                            budgetCat.forEach(function (visibleCat) {
+                                if (visibleCat != clickedLayer) {
+                                    map.setLayoutProperty(visibleCat, 'visibility', 'none');
+                                }
+                            });
+                        }
                     }
                 };
                 changeCursor(budgetCat[i], 'pointer');
