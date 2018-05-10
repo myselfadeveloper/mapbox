@@ -604,6 +604,8 @@
                 projectSearchE = projectSearchEl
             }
             projectSearchE.addEventListener('keyup', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
                 $('.main-nav-ul').empty();
                 var value = normalize(e.target.value);
                 if (projectNames.length) {
