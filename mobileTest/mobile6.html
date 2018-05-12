@@ -402,12 +402,12 @@
         touchingMap = true;
         });
 
-//         //When the Mapbox canvas is no longer being touched, adjust the global tracking var
-//         $(document).on("touchend","canvas",function(e){
-//         if(e.touches.length == 0){
-//             touchingMap = false;
-//         }
-//         });
+        //When the Mapbox canvas is no longer being touched, adjust the global tracking var
+        $(document).on("touchend","canvas",function(e){
+        if(e.touches.length == 0){
+            touchingMap = false;
+        }
+        });
 
         var windowWidth = $(window).width();
         //When any touch move event happens fire this:
