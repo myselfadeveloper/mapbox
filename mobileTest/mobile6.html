@@ -397,26 +397,26 @@
         //Global var tracks whether map is being touched
         var touchingMap = false;
 
-        //When the Mapbox canvas is touched, adjust the global tracking var
-        $(document).on("touchstart","canvas",function(e){
-        touchingMap = true;
-        });
+//         //When the Mapbox canvas is touched, adjust the global tracking var
+//         $(document).on("touchstart","canvas",function(e){
+//         touchingMap = true;
+//         });
 
-        //When the Mapbox canvas is no longer being touched, adjust the global tracking var
-        $(document).on("touchend","canvas",function(e){
-        if(e.touches.length == 0){
-            touchingMap = false;
-        }
-        });
+//         //When the Mapbox canvas is no longer being touched, adjust the global tracking var
+//         $(document).on("touchend","canvas",function(e){
+//         if(e.touches.length == 0){
+//             touchingMap = false;
+//         }
+//         });
 
-        var windowWidth = $(window).width();
-        //When any touch move event happens fire this:
-        $("*").on("touchmove",function(e){
-        //If the map is currently being touched, block any touch move event except those coming from the map.
-        if(touchingMap && !($(this).prop("tagName").toLowerCase() == "canvas")){
-            e.preventDefault();
-        }
-        });
+//         var windowWidth = $(window).width();
+//         //When any touch move event happens fire this:
+//         $("*").on("touchmove",function(e){
+//         //If the map is currently being touched, block any touch move event except those coming from the map.
+//         if(touchingMap && !($(this).prop("tagName").toLowerCase() == "canvas")){
+//             e.preventDefault();
+//         }
+//         });
 
         $.getJSON("budget1718.geojson", function (data) { // Get data from budget geojson file
             var budgetFeatures = data.features;
