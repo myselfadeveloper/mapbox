@@ -404,7 +404,7 @@
 
         //When the Mapbox canvas is no longer being touched, adjust the global tracking var
         $(document).on("touchend","canvas",function(e){
-        if(e.touche.length == 0){
+        if(e.originalEvent.touches.length == 0){
             touchingMap = false;
         }
         });
